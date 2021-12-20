@@ -1,0 +1,67 @@
+version: '3'
+
+# launch services
+services:
+
+# mariadb serivce
+  mariadb:
+    build: ./requirements/mariadb # build repo
+    container_name: mariadb # give specified name instead of a default name
+    restart: on-failure # restart only if failed
+    environment: # env variables using .env
+      - MARIADB_USER=${MARIADB_USER}
+      - MARIADB_U_PASS=${MARIADB_U_PASS}
+      - MARIADB_SP_USER=${MARIADB_SP_USER}
+      - MARIADB_ROOT_PASS=${MARIADB_ROOT_PASS}
+      - MARIADB_WP=${MARIADB_WP}
+    volumes: #volume_name:/path/...
+      - mariadb:/var/lib/mysql
+    networks: #network name from which the service will be part of
+      - inception
+
+  nginx:
+    build: ./requirements/nginx
+    container_name: nginx
+    restart: on-failure
+    # env_file: .env
+    volumes:
+      - wordpress:/var/www/wordpress
+    networks:
+      - inception
+    ports: # expose 443 in network + let outside see 443
+      - "443:443"
+    depends_on:
+      wordpress:
+        condition: service_started
+
+  wordpress:
+    build: ./requirements/wordpress
+    container_name: wordpress
+    restart: on-failure
+    # environment:
+    #   - MARIADB_LOGIN=${MARIADB_LOGIN}
+    #   - MARIADB_U_PASS=${MARIADB_U_PASS}
+    # env_file: .env
+    volumes:
+      - wordpress:/var/www/wordpress
+    networks:
+      - inception
+    depends_on:
+      mariadb:
+        condition: service_started
+
+networks:
+  inception:
+    driver: bridge
+
+volumes:
+  mariadb:
+    driver_opts:
+      type: none
+      device: /home/lwourms/data/mariadb
+      o: bind
+  wordpress:
+    driver_opts:
+      type: none
+      device: /home/lwourms/data/wordpress
+      o: bind
