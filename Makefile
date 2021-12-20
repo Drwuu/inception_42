@@ -16,6 +16,9 @@ ps:
 top:
 			docker-compose -f $(SRCS) top
 
+clean:
+			docker-compose -f $(SRCS) down --rmi all -v
+
 fclean:
 			docker-compose -f $(SRCS) down --rmi all -v
 			sudo rm -rf /home/lwourms/data/
@@ -23,4 +26,4 @@ fclean:
 prune:	fclean
 			docker system prune -f --all --volumes
 
-.PHONY:	up down ps top fclean prune
+.PHONY:	up down ps top clean fclean prune

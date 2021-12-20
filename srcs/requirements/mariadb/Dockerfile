@@ -13,12 +13,21 @@
 FROM debian:buster
 EXPOSE 3306
 
+ARG MARIADB_USER
+ARG MARIADB_U_PASS
+ARG MARIADB_SP_USER
+ARG MARIADB_ROOT_PASS
+ARG MARIADB_WP
+ARG MARIADB_HOSTNAME
+
 RUN apt-get update
 RUN apt-get upgrade -y
 RUN apt-get -y install mariadb-server
 
-COPY conf/db.sql /
 COPY ./conf/50-server.cnf /etc/mysql/mariadb.conf.d/
+COPY conf/db.sql /
+RUN sed -i "s/MARIADB_USER/$MARIADB_USER/g" /db.sql
+RUN sed -i "s/MARIADB_U_PASS/$MARIADB_U_PASS/g" /db.sql
 
 RUN service mysql start && mysql < db.sql
 RUN rm -f db.sql
