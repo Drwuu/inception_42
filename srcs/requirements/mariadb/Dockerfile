@@ -26,8 +26,10 @@ RUN apt-get -y install mariadb-server
 
 COPY ./conf/50-server.cnf /etc/mysql/mariadb.conf.d/
 COPY conf/db.sql /
-RUN sed -i "s/MARIADB_USER/$MARIADB_USER/g" /db.sql
+RUN sed -i "s/MARIADB_SP_USER/$MARIADB_SP_USER/g" /db.sql
 RUN sed -i "s/MARIADB_U_PASS/$MARIADB_U_PASS/g" /db.sql
+RUN sed -i "s/MARIADB_USER/$MARIADB_USER/g" /db.sql
+RUN sed -i "s/MARIADB_ROOT_PASS/$MARIADB_ROOT_PASS/g" /db.sql
 
 RUN service mysql start && mysql < db.sql
 RUN rm -f db.sql
