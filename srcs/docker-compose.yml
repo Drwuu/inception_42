@@ -5,6 +5,7 @@ services:
 
 # mariadb serivce
   mariadb:
+    image: mariadb
     env_file: .env
     build:
       context: ./requirements/mariadb # build repo
@@ -23,6 +24,7 @@ services:
       - inception
 
   nginx:
+    image: nginx
     build: ./requirements/nginx
     container_name: nginx
     restart: on-failure
@@ -37,6 +39,7 @@ services:
         condition: service_started
 
   wordpress:
+    image: wordpress
     build: ./requirements/wordpress
     container_name: wordpress
     restart: on-failure
